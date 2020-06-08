@@ -16,7 +16,7 @@ var map = document.querySelector('.map');
 var similarListElement = map.querySelector('.map__pins');
 
 // находит шаблон пина
-var PinTemplate = document.querySelector('#pin')
+var pinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
 
@@ -126,7 +126,7 @@ var generateAnnouncements = function () {
 
 // собирает всю информацию в объявление / в карточку
 var renderAnnouncement = function (announcement) {
-  var announcementElement = PinTemplate.cloneNode(true);
+  var announcementElement = pinTemplate.cloneNode(true);
   announcementElement.querySelector('.popup__avatar').textContent = announcement.author.avatar;
   announcementElement.querySelector('.popup__title').textContent = announcement.offer.title;
   announcementElement.querySelector('.popup__text--address').textContent = announcement.offer.address;
@@ -135,7 +135,7 @@ var renderAnnouncement = function (announcement) {
 };
 
 // добавляем все сгенерированные объявления в DOM / в структуру / то есть отображаем на карте
-var showRandomAnnouncements = function () {
+var showAnnouncements = function () {
   var announcements = generateAnnouncements();
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < announcements.length; i++) {
@@ -146,7 +146,7 @@ var showRandomAnnouncements = function () {
 
 // собирает всю информацию о пине
 var renderPin = function (pin) {
-  var pinElement = PinTemplate.cloneNode(true);
+  var pinElement = pinTemplate.cloneNode(true);
   pinElement.querySelector('img').src = pin.author.avatar;
   pinElement.querySelector('img').alt = pin.offer.title;
   pinElement.style.left = pin.location.x + 'px';
@@ -156,7 +156,7 @@ var renderPin = function (pin) {
 };
 
 // добавляет все сгенерированные пины в DOM / в структуру / то есть отображаем на карте
-var showRandomPin = function (announcements) {
+var showRandomPins = function (announcements) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < announcements.length; i++) {
     fragment.appendChild(renderPin(announcements[i]));
@@ -168,8 +168,8 @@ var showRandomPin = function (announcements) {
 var init = function () {
   var pinData = generateAnnouncements();
   map.classList.remove('map--faded');
-  showRandomPin(pinData);
-  showRandomAnnouncements();
+  showRandomPins(pinData);
+  showAnnouncements();
 };
 
 init();
