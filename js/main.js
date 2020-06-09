@@ -6,11 +6,13 @@ var IMG_ADDRESS_FORMAT = '.png';
 var MAP_Y_MIN = 130;
 var MAP_Y_MAX = 630;
 var MAP_X_MIN = 0;
-var MAP_X_MAX = 1200;
 var MIN_PRICE = 1000;
 var MAX_PRICE = 5000;
 var MAX_ROOMS = 5;
 var MAX_GUESTS = 10;
+var DESCRIPTION = 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dicta qui reprehenderit laboriosam ullam odit fugit quis eius, ipsum dolores sunt iusto sapiente voluptas cum? Blanditiis consequatur distinctio quasi assumenda minus!';
+
+var maxWidth = document.querySelector('.map__overlay').offsetWidth;
 
 var map = document.querySelector('.map');
 var similarListElement = map.querySelector('.map__pins');
@@ -56,45 +58,27 @@ var photosList = [
 
 // генерирует рандомное число
 var getRandomNumber = function (min, max) {
-  return Math.floor(Math.random() * (max - min) + min); // Максимум не включается, минимум включается
+  return Math.floor(Math.random() * (max - min + 1)) + min; // Максимум и минимум включаются
 };
 
 // берет случайный элемент из массива
 var getRandomItemFromArray = function (item) {
-  var randomItem = Math.floor(Math.random() * item.length);
-
-  return randomItem;
+  return Math.floor(Math.random() * item.length);
 };
 
-// получаем массив со случайным набором удобств
-var getFeaturesList = function (featuresArr) {
-  var features = [];
-  var featuresLength = featuresArr.length;
-  var randomCountOfFeatures = getRandomNumber(0, featuresLength);
-  for (var i = 0; i <= randomCountOfFeatures; i++) {
-    features.push(features[i]);
-  }
+// получаем массив со случайным набором элементов
+var getRandomArray = function (anyArray) {
+  var copyArray = anyArray;
+  copyArray.splice(getRandomNumber(1, copyArray.length), getRandomNumber(1, copyArray.length));
 
-  return features;
-};
-
-// получаем массив со случайным набором изображений места проживания
-var getPhotosList = function (photosArr) {
-  var photos = [];
-  var photosLength = photosArr.length;
-  var randomCountOfPhotos = getRandomNumber(0, photosLength);
-  for (var i = 0; i <= randomCountOfPhotos; i++) {
-    photos.push(photos[i]);
-  }
-
-  return photos;
+  return copyArray;
 };
 
 // создаем массив из сгенерированных объектов / карточек / объявлений о сдаче
 var generateAnnouncements = function () {
   var announcements = [];
   for (var i = 1; i <= COUNT_СYCLES; i++) {
-    var locationX = getRandomNumber(MAP_X_MIN, MAP_X_MAX);
+    var locationX = getRandomNumber(MAP_X_MIN, maxWidth);
     var locationY = getRandomNumber(MAP_Y_MIN, MAP_Y_MAX);
 
     announcements.push({
@@ -110,9 +94,9 @@ var generateAnnouncements = function () {
         guests: getRandomNumber(1, MAX_GUESTS),
         checkin: getRandomItemFromArray(checkinTimes),
         checkout: getRandomItemFromArray(checkoutTimes),
-        features: getFeaturesList(featuresList),
-        description: 'Описание ' + i,
-        photos: getPhotosList(photosList)
+        features: getRandomArray(featuresList),
+        description: 'Описание ' + i + ': ' + DESCRIPTION,
+        photos: getRandomArray(photosList)
       },
       location: {
         x: locationX,
@@ -124,31 +108,12 @@ var generateAnnouncements = function () {
   return announcements;
 };
 
-// собирает всю информацию в объявление / в карточку
-var renderAnnouncement = function (announcement) {
-  var announcementElement = pinTemplate.cloneNode(true);
-  announcementElement.querySelector('.popup__avatar').textContent = announcement.author.avatar;
-  announcementElement.querySelector('.popup__title').textContent = announcement.offer.title;
-  announcementElement.querySelector('.popup__text--address').textContent = announcement.offer.address;
-
-  return announcementElement;
-};
-
-// добавляем все сгенерированные объявления в DOM / в структуру / то есть отображаем на карте
-var showAnnouncements = function () {
-  var announcements = generateAnnouncements();
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < announcements.length; i++) {
-    fragment.appendChild(renderAnnouncement(announcements[i]));
-  }
-  return similarListElement.appendChild(fragment);
-};
-
 // собирает всю информацию о пине
 var renderPin = function (pin) {
   var pinElement = pinTemplate.cloneNode(true);
-  pinElement.querySelector('img').src = pin.author.avatar;
-  pinElement.querySelector('img').alt = pin.offer.title;
+  var image = pinElement.querySelector('img');
+  image.src = pin.author.avatar;
+  image.alt = pin.offer.title;
   pinElement.style.left = pin.location.x + 'px';
   pinElement.style.top = pin.location.y + 'px';
 
@@ -169,7 +134,6 @@ var init = function () {
   var pinData = generateAnnouncements();
   map.classList.remove('map--faded');
   showRandomPins(pinData);
-  showAnnouncements();
 };
 
 init();
