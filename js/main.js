@@ -16,6 +16,39 @@ var maxWidth = document.querySelector('.map__overlay').offsetWidth;
 
 var map = document.querySelector('.map');
 var similarListElement = map.querySelector('.map__pins');
+var mainPinMain = map.querySelector('.map__pin--main');
+
+var onLeftMouseDownProcess = function (evt) {
+  if (typeof evt === 'object') {
+    evt.preventDefault();
+    switch (evt.button) {
+      case 0:
+        deleteFaded();
+        break;
+    }
+  }
+};
+
+var onEnterProcess = function (evt) {
+  if (evt.key === 'Enter') {
+    deleteFaded();
+  }
+};
+
+mainPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
+mainPinMain.addEventListener('keydown', onEnterProcess);
+
+var stopMainPinEventListener = function () {
+  mainPinMain.removeEventListener('keydown', onEnterProcess);
+  mainPinMain.removeEventListener('mousedown', onLeftMouseDownProcess);
+};
+
+var deleteFaded = function () {
+  map.classList.remove('map--faded');
+  var pinData = generateAnnouncements();
+  showRandomPins(pinData);
+  stopMainPinEventListener();
+};
 
 // находит шаблон пина
 var pinTemplate = document.querySelector('#pin')
@@ -129,11 +162,3 @@ var showRandomPins = function (announcements) {
 
   return similarListElement.appendChild(fragment);
 };
-
-var init = function () {
-  var pinData = generateAnnouncements();
-  map.classList.remove('map--faded');
-  showRandomPins(pinData);
-};
-
-init();
