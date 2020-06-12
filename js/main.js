@@ -61,7 +61,7 @@ var disableElements = function (elements) {
 };
 
 // делает элементы активными
-var enabledElements = function(elements) {
+var enabledElements = function (elements) {
   for (var i = 0; i < elements.length; i++) {
     elements[i].removeAttribute('disabled');
   }
