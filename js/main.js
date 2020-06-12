@@ -18,36 +18,83 @@ var map = document.querySelector('.map');
 var similarListElement = map.querySelector('.map__pins');
 var mainPinMain = map.querySelector('.map__pin--main');
 
+// отслеживает нажатие левой кнопки мыши
 var onLeftMouseDownProcess = function (evt) {
   if (typeof evt === 'object') {
     evt.preventDefault();
     switch (evt.button) {
       case 0:
-        deleteFaded();
+        deleteUnactiveMode();
         break;
     }
   }
 };
 
+// отслеживает нажатие Enter
 var onEnterProcess = function (evt) {
   if (evt.key === 'Enter') {
-    deleteFaded();
+    deleteUnactiveMode();
   }
 };
 
+// добавляет отслеживание нажатия левой кнопки мыши и Enter для главного пина
 mainPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
 mainPinMain.addEventListener('keydown', onEnterProcess);
 
+// убирает отслеживание нажатия левой кнопки мыши и Enter для главного пина
 var stopMainPinEventListener = function () {
   mainPinMain.removeEventListener('keydown', onEnterProcess);
   mainPinMain.removeEventListener('mousedown', onLeftMouseDownProcess);
 };
 
-var deleteFaded = function () {
+var mapAdForm = document.querySelector('.ad-form');
+var disabledAdForm = mapAdForm.querySelectorAll('fieldset');
+
+var mapFilters = document.querySelector('.map__filters');
+var disabledMapFilters = mapFilters.querySelectorAll('select');
+
+// делает элементы неактивными
+var disableElements = function (elements) {
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].setAttribute('disabled', true);
+  }
+};
+
+// делает элементы активными
+var enabledElements = function(elements) {
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].removeAttribute('disabled');
+  }
+};
+
+var mapFilter = document.querySelectorAll('.map__filter');
+var mapFeature = document.querySelectorAll('.map__feature');
+
+// устанавливает курсор по умолчанию
+var setCursorDefault = function (elements) {
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].style.cursor = 'default';
+  }
+};
+
+// устанавливает курсор с типом Pointer
+var setCursorPointer = function (elements) {
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].style.cursor = 'pointer';
+  }
+};
+
+// убирает скрытие элементов страницы и переводит страницу в активное состояние
+var deleteUnactiveMode = function () {
   map.classList.remove('map--faded');
+  mapAdForm.classList.remove('ad-form--disabled');
   var pinData = generateAnnouncements();
   showRandomPins(pinData);
   stopMainPinEventListener();
+  enabledElements(disabledAdForm);
+  enabledElements(disabledMapFilters);
+  setCursorPointer(mapFilter);
+  setCursorPointer(mapFeature);
 };
 
 // находит шаблон пина
@@ -162,3 +209,12 @@ var showRandomPins = function (announcements) {
 
   return similarListElement.appendChild(fragment);
 };
+
+var init = function () {
+  disableElements(disabledMapFilters);
+  disableElements(disabledAdForm);
+  setCursorDefault(mapFilter);
+  setCursorDefault(mapFeature);
+};
+
+init();
