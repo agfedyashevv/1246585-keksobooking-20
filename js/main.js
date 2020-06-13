@@ -11,12 +11,13 @@ var MAX_PRICE = 5000;
 var MAX_ROOMS = 5;
 var MAX_GUESTS = 10;
 var DESCRIPTION = 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dicta qui reprehenderit laboriosam ullam odit fugit quis eius, ipsum dolores sunt iusto sapiente voluptas cum? Blanditiis consequatur distinctio quasi assumenda minus!';
+var HEIGHT_TAIL_MAIN_PIN = 22;
 
 var maxWidth = document.querySelector('.map__overlay').offsetWidth;
 
 var map = document.querySelector('.map');
 var similarListElement = map.querySelector('.map__pins');
-var mainPinMain = map.querySelector('.map__pin--main');
+var mapPinMain = map.querySelector('.map__pin--main');
 
 // отслеживает нажатие левой кнопки мыши
 var onLeftMouseDownProcess = function (evt) {
@@ -38,13 +39,13 @@ var onEnterProcess = function (evt) {
 };
 
 // добавляет отслеживание нажатия левой кнопки мыши и Enter для главного пина
-mainPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
-mainPinMain.addEventListener('keydown', onEnterProcess);
+mapPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
+mapPinMain.addEventListener('keydown', onEnterProcess);
 
 // убирает отслеживание нажатия левой кнопки мыши и Enter для главного пина
 var stopMainPinEventListener = function () {
-  mainPinMain.removeEventListener('keydown', onEnterProcess);
-  mainPinMain.removeEventListener('mousedown', onLeftMouseDownProcess);
+  mapPinMain.removeEventListener('keydown', onEnterProcess);
+  mapPinMain.removeEventListener('mousedown', onLeftMouseDownProcess);
 };
 
 var mapAdForm = document.querySelector('.ad-form');
@@ -70,7 +71,7 @@ var enabledElements = function (elements) {
 var mapFilter = document.querySelectorAll('.map__filter');
 var mapFeature = document.querySelectorAll('.map__feature');
 
-// устанавливает курсор по умолчанию
+// устанавливает курсор с типом по умолчанию
 var setCursorDefault = function (elements) {
   for (var i = 0; i < elements.length; i++) {
     elements[i].style.cursor = 'default';
@@ -84,6 +85,8 @@ var setCursorPointer = function (elements) {
   }
 };
 
+var activeMode = false;
+
 // убирает скрытие элементов страницы и переводит страницу в активное состояние
 var deleteUnactiveMode = function () {
   map.classList.remove('map--faded');
@@ -95,6 +98,42 @@ var deleteUnactiveMode = function () {
   enabledElements(disabledMapFilters);
   setCursorPointer(mapFilter);
   setCursorPointer(mapFeature);
+  getMainPinAddress();
+  activeMode = true;
+  getMainPinAddress();
+};
+
+var pinImage = mapPinMain.querySelector('img');
+
+// получает ширину главного пина
+var getMainPinWidth = function () {
+  var pinWidth = pinImage.width;
+
+  return pinWidth;
+};
+
+// получает высоту главного пина
+var getMainPinHeight = function () {
+  var pinHeight = pinImage.height;
+
+  return pinHeight;
+};
+
+var addressCoord = document.querySelector('#address');
+
+// выводит координаты главного пина в строку 'Адрес'
+var getMainPinAddress = function () {
+  var leftCoord = mapPinMain.offsetLeft;
+  var topCoord = mapPinMain.offsetTop;
+  var adress = addressCoord.value = leftCoord + ', ' + topCoord;
+
+  if (activeMode) {
+    leftCoord = mapPinMain.offsetLeft + getMainPinWidth() / 2;
+    topCoord = mapPinMain.offsetTop + getMainPinHeight() / 2 + HEIGHT_TAIL_MAIN_PIN;
+    adress = addressCoord.value = leftCoord + ', ' + topCoord;
+  }
+
+  return adress;
 };
 
 // находит шаблон пина
@@ -215,6 +254,7 @@ var init = function () {
   disableElements(disabledAdForm);
   setCursorDefault(mapFilter);
   setCursorDefault(mapFeature);
+  getMainPinAddress();
 };
 
 init();
