@@ -12,10 +12,6 @@ var MAX_ROOMS = 5;
 var MAX_GUESTS = 10;
 var DESCRIPTION = 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dicta qui reprehenderit laboriosam ullam odit fugit quis eius, ipsum dolores sunt iusto sapiente voluptas cum? Blanditiis consequatur distinctio quasi assumenda minus!';
 var HEIGHT_TAIL_MAIN_PIN = 22;
-var MIN_PRICE_BUNGALO = 0;
-var MIN_PRICE_FLAT = 1000;
-var MIN_PRICE_HOUSE = 5000;
-var MIN_PRICE_PALACE = 10000;
 
 // находит ширину окна, в котором будут размещаться пины
 var maxWidth = document.querySelector('.map__overlay').offsetWidth;
@@ -25,11 +21,9 @@ var mapPinMain = map.querySelector('.map__pin--main');
 var pinImage = mapPinMain.querySelector('img');
 var mapAdForm = document.querySelector('.ad-form');
 var adFormSubmit = document.querySelector('.ad-form__submit');
-var mapFilters = document.querySelector('.map__filters');
 var mapFilter = document.querySelectorAll('.map__filter');
 var mapFeature = document.querySelectorAll('.map__feature');
-var disabledAdForm = mapAdForm.querySelectorAll('fieldset');
-var disabledMapFilters = mapFilters.querySelectorAll('select');
+var disabledPage = document.querySelectorAll('fieldset, select');
 var addressInput = document.querySelector('fieldset input[name = address]');
 var priceInput = mapAdForm.querySelector('#price');
 var typeOfHousing = mapAdForm.querySelector('#type');
@@ -46,10 +40,10 @@ var pinTemplate = document.querySelector('#pin')
 var activeMode = false;
 
 var minPricesForNight = {
-  bungalo: MIN_PRICE_BUNGALO,
-  flat: MIN_PRICE_FLAT,
-  house: MIN_PRICE_HOUSE,
-  palace: MIN_PRICE_PALACE
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
 };
 
 var types = [
@@ -88,13 +82,9 @@ var photosList = [
 
 // отслеживает нажатие левой кнопки мыши
 var onLeftMouseDownProcess = function (evt) {
-  if (typeof evt === 'object') {
+  if (evt.button === 0) {
     evt.preventDefault();
-    switch (evt.button) {
-      case 0:
-        deleteUnactiveMode();
-        break;
-    }
+    deleteUnactiveMode();
   }
 };
 
@@ -123,7 +113,7 @@ var enabledElements = function (elements) {
   for (var i = 0; i < elements.length; i++) {
     elements[i].removeAttribute('disabled');
   }
-  addressInput.setAttribute('disabled', true);
+  addressInput.setAttribute('readonly', true);
 };
 
 // устанавливает курсор с типом по умолчанию
@@ -148,8 +138,7 @@ var deleteUnactiveMode = function () {
   var pinData = generateAnnouncements();
   showRandomPins(pinData);
   stopMainPinEventListener();
-  enabledElements(disabledAdForm);
-  enabledElements(disabledMapFilters);
+  enabledElements(disabledPage);
   setCursorPointer(mapFilter);
   setCursorPointer(mapFeature);
   activeMode = true;
@@ -274,8 +263,7 @@ var showRandomPins = function (announcements) {
 };
 
 var init = function () {
-  disableElements(disabledMapFilters);
-  disableElements(disabledAdForm);
+  disableElements(disabledPage);
   setCursorDefault(mapFilter);
   setCursorDefault(mapFeature);
   getMainPinAddress();
