@@ -104,7 +104,11 @@
   };
 
   window.data = {
-    generateAnnouncements: generateAnnouncements
+    generateAnnouncements: generateAnnouncements,
+    mapYMin: MAP_Y_MIN,
+    mapYMax: MAP_Y_MAX,
+    mapXMin: MAP_X_MIN,
+    maxWidth: maxWidth
   };
 
 })();
