@@ -3,6 +3,7 @@
 (function () {
 
   var HEIGHT_TAIL_MAIN_PIN = 22;
+  var MAX_PINS_ON_MAP = 5;
   var similarListElement = window.mapControl.mapElement.querySelector('.map__pins');
   var mapPinMain = window.mapControl.mapElement.querySelector('.map__pin--main');
   var pinImage = mapPinMain.querySelector('img');
@@ -61,14 +62,29 @@
     return pinElement;
   };
 
-  // добавляет все сгенерированные пины в DOM / в структуру / то есть отображаем на карте
-  var showRandomPins = function (announcements) {
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < announcements.length; i++) {
-      fragment.appendChild(renderPin(announcements[i]));
-    }
+  // отображает все пины с сервера
+  var showServerPins = function () {
+    window.backend(function (announcements) {
+      var fragment = document.createDocumentFragment();
 
-    return similarListElement.appendChild(fragment);
+      for (var i = 0; i < MAX_PINS_ON_MAP; i++) {
+        fragment.appendChild(window.pin.renderPin(announcements[i]));
+      }
+
+      return window.pin.similarListElement.appendChild(fragment);
+    }, function () { });
+  };
+
+  var errorHandler = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '30px';
+
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
   };
 
   // добавляет отслеживание нажатия левой кнопки мыши и Enter для главного пина
@@ -79,7 +95,10 @@
     getMainPinAddress: getMainPinAddress,
     activeMode: activeMode,
     stopMainPinEventListener: stopMainPinEventListener,
-    showRandomPins: showRandomPins
+    renderPin: renderPin,
+    similarListElement: similarListElement,
+    showServerPins: showServerPins,
+    errorHandler: errorHandler
   };
 
 })();
