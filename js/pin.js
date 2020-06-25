@@ -64,7 +64,7 @@
 
   // отображает все пины с сервера
   var showServerPins = function () {
-    window.backend(function (announcements) {
+    window.backend.loadData(function (announcements) {
       var fragment = document.createDocumentFragment();
 
       for (var i = 0; i < MAX_PINS_ON_MAP; i++) {

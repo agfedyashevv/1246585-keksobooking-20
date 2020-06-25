@@ -53,6 +53,14 @@
   capacity.addEventListener('change', setRoomCapacity);
   adFormSubmit.addEventListener('click', setRoomCapacity);
 
+  adFormSubmit.addEventListener('submit', function (evt) {
+    window.backend.uploadData(new FormData(adFormSubmit), function (response) {
+      window.form.mapAdForm.classList.add('ad-form--disabled');
+      window.mapControl.disableElements();
+    });
+    evt.preventDefault();
+  });
+
   window.form = {
     mapAdForm: mapAdForm
   };

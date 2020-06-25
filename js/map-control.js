@@ -29,7 +29,7 @@
     window.form.mapAdForm.classList.remove('ad-form--disabled');
     window.pin.showServerPins();
     window.pin.stopMainPinEventListener();
-    window.backend(window.pin.showServerPins, window.pin.errorHandler);
+    window.backend.loadData(window.pin.showServerPins, window.pin.errorHandler);
     enabledElements(disabledPage);
     setCursorPointer(mapFilter);
     setCursorPointer(mapFeature);
