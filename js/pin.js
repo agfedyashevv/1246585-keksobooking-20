@@ -8,11 +8,19 @@
   var mapPinMain = window.mapControl.mapElement.querySelector('.map__pin--main');
   var pinImage = mapPinMain.querySelector('img');
   var activeMode = false;
+  var pins = [];
 
   // находит шаблон пина
   var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
+
+  // находит шаблон сообщения об ошибке
+  var errorTemplate = document.querySelector('#error')
+    .content
+    .querySelector('.error');
+
+  var mainSection = document.querySelector('main');
 
   // отслеживает нажатие левой кнопки мыши
   var onLeftMouseDownProcess = function (evt) {
@@ -63,33 +71,62 @@
   };
 
   // отображает все пины с сервера
-  var showServerPins = function () {
-    window.backend(function (announcements) {
-      var fragment = document.createDocumentFragment();
+  var showServerPins = function (announcements) {
+    var fragment = document.createDocumentFragment();
 
-      for (var i = 0; i < MAX_PINS_ON_MAP; i++) {
-        fragment.appendChild(window.pin.renderPin(announcements[i]));
-      }
+    for (var i = 0; i < announcements.length; i++) {
+      fragment.appendChild(window.pin.renderPin(announcements[i]));
+    }
 
-      return window.pin.similarListElement.appendChild(fragment);
-    }, function () { });
+    return window.pin.similarListElement.appendChild(fragment);
+  };
+
+  var drawPins = function () {
+    var newPins = pins.slice(0, MAX_PINS_ON_MAP);
+    showServerPins(newPins);
+  };
+
+  var requestPins = function () {
+    window.backend.loadData(successHandler, errorHandler);
+  };
+
+  var successHandler = function (announcements) {
+    pins = announcements;
+    mapPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
+    mapPinMain.addEventListener('keydown', onEnterProcess);
   };
 
   var errorHandler = function (errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
-    node.style.position = 'absolute';
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = '30px';
-
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
+    var errorElement = errorTemplate.cloneNode(true);
+    var messageText = errorElement.querySelector('p');
+    messageText.textContent = errorMessage;
+    document.addEventListener('click', closeLeftMouseError);
+    document.addEventListener('keydown', closeEscError);
+    mainSection.insertAdjacentElement('afterbegin', errorElement);
   };
 
-  // добавляет отслеживание нажатия левой кнопки мыши и Enter для главного пина
-  mapPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
-  mapPinMain.addEventListener('keydown', onEnterProcess);
+  var closeSeverError = function () {
+    var errorElements = document.body.querySelector('.error');
+    errorElements.classList.add('hidden');
+    window.mapControl.disableElements(window.main.disabledPage);
+    window.mapControl.mapElement.classList.add('map--faded');
+    requestPins();
+  };
+
+  var closeLeftMouseError = function (evt) {
+    if (evt.button === 0) {
+      closeSeverError();
+      document.removeEventListener('click', closeLeftMouseError);
+    }
+  };
+
+  var closeEscError = function (evt) {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      closeSeverError();
+      document.removeEventListener('keydown', closeEscError);
+    }
+  };
 
   window.pin = {
     getMainPinAddress: getMainPinAddress,
@@ -98,7 +135,9 @@
     renderPin: renderPin,
     similarListElement: similarListElement,
     showServerPins: showServerPins,
-    errorHandler: errorHandler
+    errorHandler: errorHandler,
+    requestPins: requestPins,
+    drawPins: drawPins
   };
 
 })();

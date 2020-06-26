@@ -27,9 +27,8 @@
   var deleteUnactiveMode = function () {
     mapElement.classList.remove('map--faded');
     window.form.mapAdForm.classList.remove('ad-form--disabled');
-    window.pin.showServerPins();
     window.pin.stopMainPinEventListener();
-    window.backend(window.pin.showServerPins, window.pin.errorHandler);
+    window.pin.drawPins();
     enabledElements(disabledPage);
     setCursorPointer(mapFilter);
     setCursorPointer(mapFeature);

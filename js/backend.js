@@ -7,7 +7,7 @@
   };
   var TIMEOUT_IN_MS = 500;
 
-  window.backend = function (onSuccess, onError) {
+  var loadData = function (onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
@@ -32,4 +32,9 @@
     xhr.open('GET', URL);
     xhr.send();
   };
+
+  window.backend = {
+    loadData: loadData
+  };
+
 })();
