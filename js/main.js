@@ -8,6 +8,7 @@
   window.mapControl.setCursorDefault(window.mapControl.mapFilter);
   window.mapControl.setCursorDefault(window.mapControl.mapFeature);
   window.pin.getMainPinAddress();
+  window.pin.requestPins();
 
   window.main = {
     disabledPage: disabledPage

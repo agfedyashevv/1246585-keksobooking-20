@@ -3,15 +3,24 @@
 (function () {
 
   var HEIGHT_TAIL_MAIN_PIN = 22;
+  var MAX_PINS_ON_MAP = 5;
   var similarListElement = window.mapControl.mapElement.querySelector('.map__pins');
   var mapPinMain = window.mapControl.mapElement.querySelector('.map__pin--main');
   var pinImage = mapPinMain.querySelector('img');
   var activeMode = false;
+  var pins = [];
 
   // находит шаблон пина
   var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
+
+  // находит шаблон сообщения об ошибке
+  var errorTemplate = document.querySelector('#error')
+    .content
+    .querySelector('.error');
+
+  var mainSection = document.querySelector('main');
 
   // отслеживает нажатие левой кнопки мыши
   var onLeftMouseDownProcess = function (evt) {
@@ -61,25 +70,74 @@
     return pinElement;
   };
 
-  // добавляет все сгенерированные пины в DOM / в структуру / то есть отображаем на карте
-  var showRandomPins = function (announcements) {
+  // отображает все пины с сервера
+  var showServerPins = function (announcements) {
     var fragment = document.createDocumentFragment();
+
     for (var i = 0; i < announcements.length; i++) {
-      fragment.appendChild(renderPin(announcements[i]));
+      fragment.appendChild(window.pin.renderPin(announcements[i]));
     }
 
-    return similarListElement.appendChild(fragment);
+    return window.pin.similarListElement.appendChild(fragment);
   };
 
-  // добавляет отслеживание нажатия левой кнопки мыши и Enter для главного пина
-  mapPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
-  mapPinMain.addEventListener('keydown', onEnterProcess);
+  var drawPins = function () {
+    var newPins = pins.slice(0, MAX_PINS_ON_MAP);
+    showServerPins(newPins);
+  };
+
+  var requestPins = function () {
+    window.backend.loadData(successHandler, errorHandler);
+  };
+
+  var successHandler = function (announcements) {
+    pins = announcements;
+    mapPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
+    mapPinMain.addEventListener('keydown', onEnterProcess);
+  };
+
+  var errorHandler = function (errorMessage) {
+    var errorElement = errorTemplate.cloneNode(true);
+    var messageText = errorElement.querySelector('p');
+    messageText.textContent = errorMessage;
+    document.addEventListener('click', closeLeftMouseError);
+    document.addEventListener('keydown', closeEscError);
+    mainSection.insertAdjacentElement('afterbegin', errorElement);
+  };
+
+  var closeSeverError = function () {
+    var errorElements = document.body.querySelector('.error');
+    errorElements.classList.add('hidden');
+    window.mapControl.disableElements(window.main.disabledPage);
+    window.mapControl.mapElement.classList.add('map--faded');
+    requestPins();
+  };
+
+  var closeLeftMouseError = function (evt) {
+    if (evt.button === 0) {
+      closeSeverError();
+      document.removeEventListener('click', closeLeftMouseError);
+    }
+  };
+
+  var closeEscError = function (evt) {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      closeSeverError();
+      document.removeEventListener('keydown', closeEscError);
+    }
+  };
 
   window.pin = {
     getMainPinAddress: getMainPinAddress,
     activeMode: activeMode,
     stopMainPinEventListener: stopMainPinEventListener,
-    showRandomPins: showRandomPins
+    renderPin: renderPin,
+    similarListElement: similarListElement,
+    showServerPins: showServerPins,
+    errorHandler: errorHandler,
+    requestPins: requestPins,
+    drawPins: drawPins
   };
 
 })();
