@@ -7,10 +7,11 @@
     OK: 200
   };
   var TIMEOUT_IN_MS = 500;
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
 
   var loadData = function (onSuccess, onError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+
     xhr.addEventListener('load', function () {
       if (xhr.status === StatusCode.OK) {
         onSuccess(xhr.response);
@@ -34,6 +35,8 @@
   };
 
   var uploadData = function (data, onSuccess) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
     xhr.addEventListener('load', function () {
       onSuccess(xhr.response);
     });
