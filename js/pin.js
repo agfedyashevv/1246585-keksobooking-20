@@ -126,8 +126,6 @@
 
   var closeServerError = function (element) {
     element.remove();
-    window.mapControl.disableElements(window.main.disabledPage);
-    window.mapControl.mapElement.classList.add('map--faded');
     requestPins();
   };
 
