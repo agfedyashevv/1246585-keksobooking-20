@@ -10,6 +10,13 @@
   var timeOut = mapAdForm.querySelector('#timeout');
   var rooms = mapAdForm.querySelector('#room_number');
   var capacity = mapAdForm.querySelector('#capacity');
+  var successTemplate = document.querySelector('#success')
+    .content
+    .querySelector('.success');
+
+  var successElement = successTemplate.cloneNode(true);
+
+  var adFormReset = document.querySelector('.ad-form__reset');
 
   var minPricesForNight = {
     bungalo: 0,
@@ -46,12 +53,50 @@
     }
   };
 
+  var showSuccessMessage = function () {
+    document.addEventListener('click', function () {
+      closeSuccessMessage(successElement);
+    });
+    document.addEventListener('keydown', closeEscSuccess);
+    window.pin.mainSection.insertAdjacentElement('afterbegin', successElement);
+  };
+
+  var closeEscSuccess = function (evt) {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      closeSuccessMessage(successElement);
+      document.removeEventListener('keydown', closeEscSuccess);
+    }
+  };
+
+  var closeSuccessMessage = function () {
+    successElement.remove(successElement);
+  };
+
+  var onFormSubmit = function (evt) {
+    evt.preventDefault();
+
+    window.backend.uploadData(new FormData(mapAdForm), showSuccessMessage, window.pin.onError);
+    mapAdForm.reset();
+    window.mapControl.setUnactiveMode();
+    window.pin.deletePins();
+  };
+
+  var resetForm = function (evt) {
+    evt.preventDefault();
+    mapAdForm.reset();
+    window.pin.getMainPinAddress();
+    setHousingPrice();
+  };
+
   typeOfHousing.addEventListener('change', setHousingPrice);
   timeIn.addEventListener('change', setTimeInToOut);
   timeOut.addEventListener('change', setTimeOutToIn);
   rooms.addEventListener('change', setRoomCapacity);
   capacity.addEventListener('change', setRoomCapacity);
   adFormSubmit.addEventListener('click', setRoomCapacity);
+  mapAdForm.addEventListener('submit', onFormSubmit);
+  adFormReset.addEventListener('click', resetForm);
 
   window.form = {
     mapAdForm: mapAdForm

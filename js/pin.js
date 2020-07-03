@@ -20,6 +20,8 @@
     .content
     .querySelector('.error');
 
+  var errorElement = errorTemplate.cloneNode(true);
+
   var mainSection = document.querySelector('main');
 
   // отслеживает нажатие левой кнопки мыши
@@ -33,6 +35,12 @@
   // отслеживает нажатие Enter
   var onEnterProcess = function (evt) {
     if (evt.key === 'Enter') {
+      window.mapControl.deleteUnactiveMode();
+    }
+  };
+
+  var onEscProcess = function (evt) {
+    if (evt.key === 'Escape') {
       window.mapControl.deleteUnactiveMode();
     }
   };
@@ -55,6 +63,7 @@
   // убирает отслеживание нажатия левой кнопки мыши и Enter для главного пина
   var stopMainPinEventListener = function () {
     mapPinMain.removeEventListener('keydown', onEnterProcess);
+    mapPinMain.removeEventListener('keydown', onEscProcess);
     mapPinMain.removeEventListener('mousedown', onLeftMouseDownProcess);
   };
 
@@ -87,17 +96,27 @@
   };
 
   var requestPins = function () {
-    window.backend.loadData(successHandler, errorHandler);
+    window.backend.loadData(onSuccess, onError);
   };
 
-  var successHandler = function (announcements) {
+  var deleteServerPins = function (elements) {
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].remove();
+    }
+  };
+
+  var deletePins = function () {
+    var pinButtons = similarListElement.querySelectorAll('.map__pin:not(.map__pin--main)');
+    deleteServerPins(pinButtons);
+  };
+
+  var onSuccess = function (announcements) {
     pins = announcements;
     mapPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
     mapPinMain.addEventListener('keydown', onEnterProcess);
   };
 
-  var errorHandler = function (errorMessage) {
-    var errorElement = errorTemplate.cloneNode(true);
+  var onError = function (errorMessage) {
     var messageText = errorElement.querySelector('p');
     messageText.textContent = errorMessage;
     document.addEventListener('click', closeLeftMouseError);
@@ -105,17 +124,14 @@
     mainSection.insertAdjacentElement('afterbegin', errorElement);
   };
 
-  var closeSeverError = function () {
-    var errorElements = document.body.querySelector('.error');
-    errorElements.classList.add('hidden');
-    window.mapControl.disableElements(window.main.disabledPage);
-    window.mapControl.mapElement.classList.add('map--faded');
+  var closeServerError = function (element) {
+    element.remove();
     requestPins();
   };
 
   var closeLeftMouseError = function (evt) {
     if (evt.button === 0) {
-      closeSeverError();
+      closeServerError(errorElement);
       document.removeEventListener('click', closeLeftMouseError);
     }
   };
@@ -123,7 +139,7 @@
   var closeEscError = function (evt) {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      closeSeverError();
+      closeServerError(errorElement);
       document.removeEventListener('keydown', closeEscError);
     }
   };
@@ -135,9 +151,12 @@
     renderPin: renderPin,
     similarListElement: similarListElement,
     showServerPins: showServerPins,
-    errorHandler: errorHandler,
+    onError: onError,
     requestPins: requestPins,
-    drawPins: drawPins
+    drawPins: drawPins,
+    onSuccess: onSuccess,
+    mainSection: mainSection,
+    deletePins: deletePins
   };
 
 })();
