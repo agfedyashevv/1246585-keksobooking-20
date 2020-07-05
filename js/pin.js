@@ -3,9 +3,9 @@
 (function () {
 
   var HEIGHT_TAIL_MAIN_PIN = 22;
-  var MAX_PINS_ON_MAP = 5;
   var similarListElement = window.mapControl.mapElement.querySelector('.map__pins');
   var mapPinMain = window.mapControl.mapElement.querySelector('.map__pin--main');
+  var mapFilters = document.querySelector('.map__filters');
   var pinImage = mapPinMain.querySelector('img');
   var activeMode = false;
   var pins = [];
@@ -91,7 +91,8 @@
   };
 
   var drawPins = function () {
-    var newPins = pins.slice(0, MAX_PINS_ON_MAP);
+    deletePins();
+    var newPins = window.filter.setFilters(pins);
     showServerPins(newPins);
   };
 
@@ -144,19 +145,21 @@
     }
   };
 
+  mapFilters.addEventListener('change', drawPins);
+
   window.pin = {
     getMainPinAddress: getMainPinAddress,
     activeMode: activeMode,
     stopMainPinEventListener: stopMainPinEventListener,
     renderPin: renderPin,
     similarListElement: similarListElement,
-    showServerPins: showServerPins,
     onError: onError,
     requestPins: requestPins,
     drawPins: drawPins,
     onSuccess: onSuccess,
     mainSection: mainSection,
-    deletePins: deletePins
+    deletePins: deletePins,
+    pins: pins
   };
 
 })();
