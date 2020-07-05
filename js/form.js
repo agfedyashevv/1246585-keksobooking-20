@@ -80,6 +80,7 @@
     mapAdForm.reset();
     window.mapControl.setUnactiveMode();
     window.pin.deletePins();
+    setHousingPrice();
   };
 
   var resetForm = function (evt) {
