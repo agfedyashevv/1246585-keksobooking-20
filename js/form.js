@@ -4,6 +4,7 @@
 
   var adFormSubmit = document.querySelector('.ad-form__submit');
   var mapAdForm = document.querySelector('.ad-form');
+  // var mapFilters = document.querySelector('.map__filters');
   var priceInput = mapAdForm.querySelector('#price');
   var typeOfHousing = mapAdForm.querySelector('#type');
   var timeIn = mapAdForm.querySelector('#timein');
@@ -78,6 +79,7 @@
 
     window.backend.uploadData(new FormData(mapAdForm), showSuccessMessage, window.pin.onError);
     mapAdForm.reset();
+    window.pin.mapFilters.reset();
     window.mapControl.setUnactiveMode();
     window.pin.deletePins();
     setHousingPrice();
@@ -86,6 +88,8 @@
   var resetForm = function (evt) {
     evt.preventDefault();
     mapAdForm.reset();
+    window.pin.mapFilters.reset();
+    window.pin.drawPins();
     window.pin.getMainPinAddress();
     setHousingPrice();
   };

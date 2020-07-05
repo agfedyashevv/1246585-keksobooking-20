@@ -159,7 +159,8 @@
     onSuccess: onSuccess,
     mainSection: mainSection,
     deletePins: deletePins,
-    pins: pins
+    pins: pins,
+    mapFilters: mapFilters
   };
 
 })();
