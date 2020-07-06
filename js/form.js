@@ -4,7 +4,6 @@
 
   var adFormSubmit = document.querySelector('.ad-form__submit');
   var mapAdForm = document.querySelector('.ad-form');
-  // var mapFilters = document.querySelector('.map__filters');
   var priceInput = mapAdForm.querySelector('#price');
   var typeOfHousing = mapAdForm.querySelector('#type');
   var timeIn = mapAdForm.querySelector('#timein');

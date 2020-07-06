@@ -94,6 +94,7 @@
     deletePins();
     var newPins = window.filter.setFilters(pins);
     showServerPins(newPins);
+    window.card.showAnnouncements();
   });
 
   var requestPins = function () {

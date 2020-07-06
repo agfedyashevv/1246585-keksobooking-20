@@ -2,7 +2,7 @@
 
 (function () {
 
-  var COUNT_СYCLES = 8;
+  var COUNT_СYCLES = 1;
   var MAP_Y_MIN = 130;
   var MAP_Y_MAX = 630;
   var MAP_X_MIN = 0;
