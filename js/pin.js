@@ -90,11 +90,11 @@
     return window.pin.similarListElement.appendChild(fragment);
   };
 
-  var drawPins = function () {
+  var drawPins = window.debounce(function () {
     deletePins();
     var newPins = window.filter.setFilters(pins);
     showServerPins(newPins);
-  };
+  });
 
   var requestPins = function () {
     window.backend.loadData(onSuccess, onError);
@@ -159,7 +159,8 @@
     onSuccess: onSuccess,
     mainSection: mainSection,
     deletePins: deletePins,
-    pins: pins
+    pins: pins,
+    mapFilters: mapFilters
   };
 
 })();
