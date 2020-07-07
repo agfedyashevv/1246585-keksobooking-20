@@ -21,34 +21,46 @@
 
   // добавляем все сгенерированные объявления в DOM / в структуру / то есть отображаем на карте
   var showAnnouncements = function () {
+    var mapPin = document.querySelector('.map__pin:not(.map__pin--main)');
+    mapPin.removeEventListener('click', window.card.showAnnouncements);
+
     var announcements = window.data.generateAnnouncements();
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < 1; i++) {
       fragment.appendChild(renderAnnouncement(announcements[i]));
     }
+
+    cardCloseButton.addEventListener('click', onLeftMouseCloseCard);
+    document.addEventListener('keydown', onEscCloseCard);
+
     return mapFiltersContainer.before(fragment);
   };
 
   var onLeftMouseCloseCard = function (evt) {
     if (evt.button === 0) {
-      announcementElement.remove();
-      announcementElement.removeEventListener('click', onLeftMouseCloseCard);
+      closeAnnouncements();
     }
   };
 
   var onEscCloseCard = function (evt) {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      announcementElement.remove();
-      announcementElement.removeEventListener('keydown', onEscCloseCard);
+      closeAnnouncements();
     }
   };
 
-  cardCloseButton.addEventListener('click', onLeftMouseCloseCard);
-  document.addEventListener('keydown', onEscCloseCard);
+  var closeAnnouncements = function () {
+    announcementElement.remove();
+    announcementElement.removeEventListener('click', onLeftMouseCloseCard);
+    announcementElement.removeEventListener('keydown', onEscCloseCard);
+    var mapPin = document.querySelector('.map__pin:not(.map__pin--main)');
+    mapPin.addEventListener('click', window.card.showAnnouncements);
+  };
 
   window.card = {
-    showAnnouncements: showAnnouncements
+    showAnnouncements: showAnnouncements,
+    closeAnnouncements: closeAnnouncements,
+    announcementElement: announcementElement
   };
 
 })();

@@ -78,6 +78,7 @@
 
     window.backend.uploadData(new FormData(mapAdForm), showSuccessMessage, window.pin.onError);
     mapAdForm.reset();
+    window.card.closeAnnouncements();
     window.pin.mapFilters.reset();
     window.mapControl.setUnactiveMode();
     window.pin.deletePins();
@@ -87,6 +88,7 @@
   var resetForm = function (evt) {
     evt.preventDefault();
     mapAdForm.reset();
+    window.card.closeAnnouncements();
     window.pin.mapFilters.reset();
     window.pin.drawPins();
     window.pin.getMainPinAddress();

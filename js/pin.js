@@ -94,7 +94,9 @@
     deletePins();
     var newPins = window.filter.setFilters(pins);
     showServerPins(newPins);
-    window.card.showAnnouncements();
+
+    var mapPin = document.querySelector('.map__pin:not(.map__pin--main)');
+    mapPin.addEventListener('click', window.card.showAnnouncements);
   });
 
   var requestPins = function () {
@@ -147,6 +149,7 @@
   };
 
   mapFilters.addEventListener('change', drawPins);
+  mapFilters.addEventListener('change', window.card.closeAnnouncements);
 
   window.pin = {
     getMainPinAddress: getMainPinAddress,
