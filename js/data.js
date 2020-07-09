@@ -10,18 +10,24 @@
   var MAX_PRICE = 5000;
   var MAX_ROOMS = 5;
   var MAX_GUESTS = 10;
+  var NUMBER_PHOTOS_MIN = 1;
+  var NUMBER_PHOTOS_MAX = 3;
+  var IMG_WIDTH = 45;
+  var IMG_HEIGHT = 40;
   var IMG_ADDRESS_TEMPLATE = 'img/avatars/user';
-  var IMG_ADDRESS_FORMAT = '.png';
+  var IMG_URL = 'http://o0.github.io/assets/images/tokyo/hotel';
+  var IMG_FORMAT_PNG = '.png';
+  var IMG_FORMAT_JPG = '.jpg';
   var DESCRIPTION = 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dicta qui reprehenderit laboriosam ullam odit fugit quis eius, ipsum dolores sunt iusto sapiente voluptas cum? Blanditiis consequatur distinctio quasi assumenda minus!';
 
   // находит ширину окна, в котором будут размещаться пины
   var maxWidth = document.querySelector('.map__overlay').offsetWidth;
 
   var types = [
-    'palace',
-    'flat',
-    'house',
-    'bungalo'
+    'Дворец',
+    'Квартира',
+    'Дом',
+    'Бунгало'
   ];
 
   var checkinTimes = [
@@ -45,12 +51,6 @@
     'conditioner'
   ];
 
-  var photosList = [
-    'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-    'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-    'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
-  ];
-
   // генерирует рандомное число
   var getRandomNumber = function (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min; // Максимум и минимум включаются
@@ -69,6 +69,30 @@
     return copyArray;
   };
 
+  // генерируем фото
+  var generatePhotos = function () {
+    var photos = [];
+    var photosLength = window.data.getRandomNumber(NUMBER_PHOTOS_MIN, NUMBER_PHOTOS_MAX);
+    for (var i = 1; i <= photosLength; i++) {
+      var photo = IMG_URL + i + IMG_FORMAT_JPG;
+      photos.push(photo);
+    }
+    return photos;
+  };
+
+  // отрисовываем фото
+  var renderPhotos = function (container, photos) {
+    container.innerHTML = '';
+    for (var i = 0; i < photos.length; i++) {
+      var photo = document.createElement('img');
+      photo.src = photos[i];
+      photo.width = IMG_WIDTH;
+      photo.height = IMG_HEIGHT;
+      photo.classList.add('popup__photo');
+      container.appendChild(photo);
+    }
+  };
+
   // создаем массив из сгенерированных объектов / карточек / объявлений о сдаче
   var generateAnnouncements = function () {
     var announcements = [];
@@ -78,20 +102,20 @@
 
       announcements.push({
         author: {
-          avatar: IMG_ADDRESS_TEMPLATE + 0 + i + IMG_ADDRESS_FORMAT,
+          avatar: IMG_ADDRESS_TEMPLATE + 0 + i + IMG_FORMAT_PNG,
         },
         offer: {
           title: 'Заголовок ' + i,
           address: 'Адрес ' + locationX + ', ' + locationY,
           price: getRandomNumber(MIN_PRICE, MAX_PRICE),
-          type: getRandomItemFromArray(types),
+          type: types[getRandomItemFromArray(types)],
           rooms: getRandomNumber(1, MAX_ROOMS),
           guests: getRandomNumber(1, MAX_GUESTS),
-          checkin: getRandomItemFromArray(checkinTimes),
-          checkout: getRandomItemFromArray(checkoutTimes),
+          checkin: checkinTimes[getRandomItemFromArray(checkinTimes)],
+          checkout: checkoutTimes[getRandomItemFromArray(checkoutTimes)],
           features: getRandomArray(featuresList),
           description: 'Описание ' + i + ': ' + DESCRIPTION,
-          photos: getRandomArray(photosList)
+          photos: generatePhotos()
         },
         location: {
           x: locationX,
@@ -104,7 +128,9 @@
   };
 
   window.data = {
-    generateAnnouncements: generateAnnouncements
+    generateAnnouncements: generateAnnouncements,
+    getRandomNumber: getRandomNumber,
+    renderPhotos: renderPhotos
   };
 
 })();
