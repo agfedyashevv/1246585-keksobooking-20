@@ -100,7 +100,7 @@
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < announcements.length; i++) {
-      fragment.appendChild(window.pin.renderPin(announcements[i]));
+      fragment.appendChild(renderPin(announcements[i]));
     }
 
     return window.pin.similarListElement.appendChild(fragment);
@@ -168,7 +168,6 @@
     getMainPinAddress: getMainPinAddress,
     activeMode: activeMode,
     stopMainPinEventListener: stopMainPinEventListener,
-    renderPin: renderPin,
     similarListElement: similarListElement,
     onError: onError,
     requestPins: requestPins,

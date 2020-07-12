@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var IMG_WIDTH = 45;
+  var IMG_HEIGHT = 40;
+
   var similarCardTemplate = document.querySelector('#card')
     .content
     .querySelector('.map__card');
@@ -33,7 +36,7 @@
     }
 
     if (announcement.offer.photos) {
-      window.data.renderPhotos(popupPhotos, announcement.offer.photos);
+      renderPhotos(popupPhotos, announcement.offer.photos);
     } else {
       hideElement(popupPhotos);
     }
@@ -53,6 +56,19 @@
       var feature = document.createElement('li');
       feature.classList.add('popup__feature', 'popup__feature--' + features[i]);
       container.appendChild(feature);
+    }
+  };
+
+  // отрисовываем фото
+  var renderPhotos = function (container, photos) {
+    container.innerHTML = '';
+    for (var i = 0; i < photos.length; i++) {
+      var photo = document.createElement('img');
+      photo.src = photos[i];
+      photo.width = IMG_WIDTH;
+      photo.height = IMG_HEIGHT;
+      photo.classList.add('popup__photo');
+      container.appendChild(photo);
     }
   };
 
@@ -87,7 +103,6 @@
 
   window.card = {
     closeAnnouncements: closeAnnouncements,
-    announcementElement: announcementElement,
     cardCloseButton: cardCloseButton,
     onLeftMouseCloseCard: onLeftMouseCloseCard,
     onEscCloseCard: onEscCloseCard,
