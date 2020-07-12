@@ -18,17 +18,29 @@
 
   var adFormReset = document.querySelector('.ad-form__reset');
 
-  var minPricesForNight = {
-    bungalo: 0,
-    flat: 1000,
-    house: 5000,
-    palace: 10000
+  var offerTypes = {
+    bungalo: {
+      typeRu: 'Бунгало',
+      minPrice: 0,
+    },
+    flat: {
+      typeRu: 'Квартира',
+      minPrice: 1000
+    },
+    house: {
+      typeRu: 'Дом',
+      minPrice: 5000
+    },
+    palace: {
+      typeRu: 'Дворец',
+      minPrice: 10000
+    }
   };
 
   // установка зависимостей типа жилья и цены за ночь
   var setHousingPrice = function () {
-    priceInput.placeholder = minPricesForNight[typeOfHousing.value];
-    priceInput.min = minPricesForNight[typeOfHousing.value];
+    priceInput.placeholder = offerTypes[typeOfHousing.value].minPrice;
+    priceInput.min = offerTypes[typeOfHousing.value].minPrice;
   };
 
   // установка зависимостей времени заезда и выезда
@@ -105,7 +117,8 @@
   adFormReset.addEventListener('click', resetForm);
 
   window.form = {
-    mapAdForm: mapAdForm
+    mapAdForm: mapAdForm,
+    offerTypes: offerTypes
   };
 
 })();

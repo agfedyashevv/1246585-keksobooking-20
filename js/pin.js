@@ -3,6 +3,8 @@
 (function () {
 
   var HEIGHT_TAIL_MAIN_PIN = 22;
+  var mapSection = document.querySelector('.map');
+  var mapFiltersContainer = document.querySelector('.map__filters-container');
   var similarListElement = window.mapControl.mapElement.querySelector('.map__pins');
   var mapPinMain = window.mapControl.mapElement.querySelector('.map__pin--main');
   var mapFilters = document.querySelector('.map__filters');
@@ -76,6 +78,20 @@
     pinElement.style.left = pin.location.x + 'px';
     pinElement.style.top = pin.location.y + 'px';
 
+    pinElement.addEventListener('click', function () {
+      var activePin = document.querySelector('.map__pin--active');
+
+      if (activePin) {
+        activePin.classList.remove('map__pin--active');
+      }
+
+      mapSection.insertBefore(window.card.renderAnnouncement(pin), mapFiltersContainer);
+      pinElement.classList.add('map__pin--active');
+
+      window.card.cardCloseButton.addEventListener('click', window.card.onLeftMouseCloseCard);
+      document.addEventListener('keydown', window.card.onEscCloseCard);
+    });
+
     return pinElement;
   };
 
@@ -94,9 +110,6 @@
     deletePins();
     var newPins = window.filter.setFilters(pins);
     showServerPins(newPins);
-
-    var mapPin = document.querySelector('.map__pin:not(.map__pin--main)');
-    mapPin.addEventListener('click', window.card.showAnnouncements);
   });
 
   var requestPins = function () {

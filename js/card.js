@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var mapFiltersContainer = document.querySelector('.map__filters-container');
   var similarCardTemplate = document.querySelector('#card')
     .content
     .querySelector('.map__card');
@@ -15,33 +14,28 @@
 
   // собирает всю информацию в объявление / в карточку
   var renderAnnouncement = function (announcement) {
-    var features = announcementElement.querySelector('.popup__features');
-    var photos = announcementElement.querySelector('.popup__photos');
+    var popupFeatures = announcementElement.querySelector('.popup__features');
+    var popupPhotos = announcementElement.querySelector('.popup__photos');
 
-    announcementElement.querySelector('.popup__avatar').textContent = announcement.author.avatar;
+    announcementElement.querySelector('.popup__avatar').src = announcement.author.avatar;
     announcementElement.querySelector('.popup__title').textContent = announcement.offer.title;
     announcementElement.querySelector('.popup__text--address').textContent = announcement.offer.address;
-    announcementElement.querySelector('.popup__type').textContent = announcement.offer.type;
-    renderFeatures(features, announcement.offer.features);
+    priceValue.textContent = announcement.offer.price + ' ₽/ночь';
+    announcementElement.querySelector('.popup__type').textContent = window.form.offerTypes[announcement.offer.type].typeRu;
+    capacityValue.textContent = announcement.offer.rooms + ' комнат(ы) для ' + announcement.offer.guests + ' гостей(я)';
+    timeValue.textContent = 'заезд после ' + announcement.offer.checkin + ', выезд до ' + announcement.offer.checkout;
     announcementElement.querySelector('.popup__description').textContent = announcement.offer.description;
-    window.data.renderPhotos(photos, announcement.offer.photos);
 
-    if (announcement.offer.price) {
-      priceValue.textContent = announcement.offer.price + ' ₽/ночь';
+    if (announcement.offer.features) {
+      renderFeatures(popupFeatures, announcement.offer.features);
     } else {
-      hideElement(priceValue);
+      hideElement(popupFeatures);
     }
 
-    if (announcement.offer.checkin && announcement.offer.checkout) {
-      timeValue.textContent = 'заезд после ' + announcement.offer.checkin + ', выезд до ' + announcement.offer.checkout;
+    if (announcement.offer.photos) {
+      window.data.renderPhotos(popupPhotos, announcement.offer.photos);
     } else {
-      hideElement(timeValue);
-    }
-
-    if (announcement.offer.rooms || announcement.offer.guests) {
-      capacityValue.textContent = announcement.offer.rooms + ' комнат(ы) для ' + announcement.offer.guests + ' гостей(я)';
-    } else {
-      hideElement(capacityValue);
+      hideElement(popupPhotos);
     }
 
     return announcementElement;
@@ -62,23 +56,6 @@
     }
   };
 
-  // добавляем все сгенерированные объявления в DOM / в структуру / то есть отображаем на карте
-  var showAnnouncements = function () {
-    var mapPin = document.querySelector('.map__pin:not(.map__pin--main)');
-    mapPin.removeEventListener('click', window.card.showAnnouncements);
-
-    var announcements = window.data.generateAnnouncements();
-    var fragment = document.createDocumentFragment();
-    for (var i = 0; i < 1; i++) {
-      fragment.appendChild(renderAnnouncement(announcements[i]));
-    }
-
-    cardCloseButton.addEventListener('click', onLeftMouseCloseCard);
-    document.addEventListener('keydown', onEscCloseCard);
-
-    return mapFiltersContainer.before(fragment);
-  };
-
   var onLeftMouseCloseCard = function (evt) {
     if (evt.button === 0) {
       closeAnnouncements();
@@ -92,18 +69,29 @@
     }
   };
 
+  var removeActivePin = function () {
+    var activePin = document.querySelector('.map__pin--active');
+    activePin.classList.remove('map__pin--active');
+  };
+
   var closeAnnouncements = function () {
-    announcementElement.remove();
-    announcementElement.removeEventListener('click', onLeftMouseCloseCard);
-    announcementElement.removeEventListener('keydown', onEscCloseCard);
-    var mapPin = document.querySelector('.map__pin:not(.map__pin--main)');
-    mapPin.addEventListener('click', window.card.showAnnouncements);
+    var mapCard = document.querySelector('.map__card');
+
+    if (mapCard) {
+      mapCard.remove();
+      removeActivePin();
+    }
+
+    document.removeEventListener('keydown', onEscCloseCard);
   };
 
   window.card = {
-    showAnnouncements: showAnnouncements,
     closeAnnouncements: closeAnnouncements,
-    announcementElement: announcementElement
+    announcementElement: announcementElement,
+    cardCloseButton: cardCloseButton,
+    onLeftMouseCloseCard: onLeftMouseCloseCard,
+    onEscCloseCard: onEscCloseCard,
+    renderAnnouncement: renderAnnouncement
   };
 
 })();
