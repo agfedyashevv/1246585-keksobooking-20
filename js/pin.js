@@ -12,9 +12,9 @@
   var similarListElement = window.mapControl.mapElement.querySelector('.map__pins');
   var mapPinMain = window.mapControl.mapElement.querySelector('.map__pin--main');
   var mapFilters = document.querySelector('.map__filters');
-  var pinImage = mapPinMain.querySelector('img');
   var activeMode = false;
   var pins = [];
+  var pinHeight = mapPinMain.offsetHeight + HEIGHT_TAIL_MAIN_PIN;
 
   // находит шаблон пина
   var pinTemplate = document.querySelector('#pin')
@@ -53,36 +53,32 @@
 
   // выводит координаты главного пина в строку 'Адрес'
   var getMainPinAddress = function () {
-    var leftCoord = mapPinMain.offsetLeft;
-    var topCoord = mapPinMain.offsetTop;
+    var leftCoord = mapPinMain.offsetLeft + mapPinMain.offsetWidth / 2;
+    var topCoord = mapPinMain.offsetTop + mapPinMain.offsetHeight / 2;
 
     if (window.pin.activeMode) {
-      leftCoord = mapPinMain.offsetLeft + pinImage.width / 2;
-      topCoord = mapPinMain.offsetTop + pinImage.height / 2 + HEIGHT_TAIL_MAIN_PIN;
+      topCoord = mapPinMain.offsetTop + pinHeight;
     }
 
-    var adress = window.mapControl.addressInput.value = leftCoord + ', ' + topCoord;
-
-    return adress;
+    window.mapControl.addressInput.value = Math.floor(leftCoord) + ', ' + Math.floor(topCoord);
   };
 
   var checkMoveLimits = function () {
     var halfPinWidth = mapPinMain.offsetWidth / 2;
-    var halfPinHeight = mapPinMain.offsetHeight / 2;
     var pinXLeft = mapPinMain.offsetLeft;
     var pinYTop = mapPinMain.offsetTop;
 
-    if (pinXLeft + halfPinWidth <= window.MAP_X_MIN) {
+    if (pinXLeft + halfPinWidth <= MAP_X_MIN) {
       mapPinMain.style.left = MAP_X_MIN - halfPinWidth + 'px';
     }
     if (pinXLeft + halfPinWidth >= maxWidth) {
       mapPinMain.style.left = maxWidth - halfPinWidth + 'px';
     }
-    if (pinYTop <= MAP_Y_MIN) {
-      mapPinMain.style.top = MAP_Y_MIN - halfPinHeight + HEIGHT_TAIL_MAIN_PIN + 'px';
+    if (pinYTop + pinHeight <= MAP_Y_MIN) {
+      mapPinMain.style.top = MAP_Y_MIN - pinHeight + 'px';
     }
-    if (pinYTop + halfPinHeight - HEIGHT_TAIL_MAIN_PIN >= MAP_Y_MAX) {
-      mapPinMain.style.top = MAP_Y_MAX - halfPinHeight + HEIGHT_TAIL_MAIN_PIN + 'px';
+    if (pinYTop + pinHeight >= MAP_Y_MAX) {
+      mapPinMain.style.top = MAP_Y_MAX - pinHeight + 'px';
     }
   };
 
