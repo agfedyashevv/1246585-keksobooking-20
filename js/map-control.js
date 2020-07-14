@@ -27,14 +27,25 @@
   var deleteUnactiveMode = function () {
     mapElement.classList.remove('map--faded');
     window.form.mapAdForm.classList.remove('ad-form--disabled');
-    var pinData = window.data.generateAnnouncements();
-    window.pin.showRandomPins(pinData);
     window.pin.stopMainPinEventListener();
+    window.pin.drawPins();
     enabledElements(disabledPage);
     setCursorPointer(mapFilter);
     setCursorPointer(mapFeature);
     window.pin.activeMode = true;
     window.pin.getMainPinAddress();
+  };
+
+  // деактивировать страницу
+  var setUnactiveMode = function () {
+    mapElement.classList.add('map--faded');
+    window.form.mapAdForm.classList.add('ad-form--disabled');
+    disableElements(disabledPage);
+    setCursorDefault(mapFilter);
+    setCursorDefault(mapFeature);
+    window.pin.activeMode = false;
+    window.pin.getMainPinAddress();
+    window.pin.requestPins();
   };
 
   // устанавливает курсор с типом по умолчанию
@@ -59,7 +70,8 @@
     disableElements: disableElements,
     setCursorDefault: setCursorDefault,
     deleteUnactiveMode: deleteUnactiveMode,
-    disabledPage: disabledPage
+    disabledPage: disabledPage,
+    setUnactiveMode: setUnactiveMode
   };
 
 })();
