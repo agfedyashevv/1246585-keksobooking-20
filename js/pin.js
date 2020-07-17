@@ -3,10 +3,11 @@
 (function () {
 
   var HEIGHT_TAIL_MAIN_PIN = 22;
-  var MAP_Y_MIN = 130;
-  var MAP_Y_MAX = 630;
-  var MAP_X_MIN = 0;
-  var maxWidth = document.querySelector('.map__overlay').offsetWidth;
+  // var MAP_Y_MIN = 130;
+  // var MAP_Y_MAX = 630;
+  // var MAP_X_MIN = 0;
+  var mapOverlay = document.querySelector('.map__overlay');
+  var maxWidth = mapOverlay.offsetWidth;
   var mapSection = document.querySelector('.map');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
   var similarListElement = window.mapControl.mapElement.querySelector('.map__pins');
@@ -14,7 +15,9 @@
   var mapFilters = document.querySelector('.map__filters');
   var activeMode = false;
   var pins = [];
-  var pinHeight = mapPinMain.offsetHeight + HEIGHT_TAIL_MAIN_PIN;
+  var pinHeightWithoutTail = mapPinMain.offsetHeight;
+  var pinHeight = pinHeightWithoutTail + HEIGHT_TAIL_MAIN_PIN;
+  var halfPinWidth = mapPinMain.offsetWidth / 2;
 
   // находит шаблон пина
   var pinTemplate = document.querySelector('#pin')
@@ -63,49 +66,23 @@
     window.mapControl.addressInput.value = Math.floor(leftCoord) + ', ' + Math.floor(topCoord);
   };
 
-  var checkMoveLimits = function () {
-    var halfPinWidth = mapPinMain.offsetWidth / 2;
-    var pinXLeft = mapPinMain.offsetLeft;
-    var pinYTop = mapPinMain.offsetTop;
-
-    if (pinXLeft + halfPinWidth <= MAP_X_MIN) {
-      mapPinMain.style.left = MAP_X_MIN - halfPinWidth + 'px';
-    }
-    if (pinXLeft + halfPinWidth >= maxWidth) {
-      mapPinMain.style.left = maxWidth - halfPinWidth + 'px';
-    }
-    if (pinYTop + pinHeight <= MAP_Y_MIN) {
-      mapPinMain.style.top = MAP_Y_MIN - pinHeight + 'px';
-    }
-    if (pinYTop + pinHeight >= MAP_Y_MAX) {
-      mapPinMain.style.top = MAP_Y_MAX - pinHeight + 'px';
-    }
-  };
-
   mapPinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
-    var startCoords = {
-      x: evt.clientX,
-      y: evt.clientY
-    };
+    var mapCoord = mapOverlay.getBoundingClientRect();
 
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
 
-      var shift = {
-        x: startCoords.x - moveEvt.clientX,
-        y: startCoords.y - moveEvt.clientY
-      };
+      var coordX = moveEvt.clientX - mapCoord.left;
+      var coordY = moveEvt.clientY - mapCoord.top;
 
-      startCoords = {
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
+      coordX = Math.max(0, Math.min(maxWidth, coordX)) - halfPinWidth;
+      coordY = Math.max(130, Math.min(630, coordY)) - pinHeight;
 
-      mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
-      mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
-      checkMoveLimits();
+      mapPinMain.style.left = coordX + 'px';
+      mapPinMain.style.top = coordY + 'px';
+
       getMainPinAddress();
     };
 
@@ -126,6 +103,62 @@
     mapPinMain.removeEventListener('keydown', onEscProcess);
     mapPinMain.removeEventListener('mousedown', onLeftMouseDownProcess);
   };
+
+  // var checkMoveLimits = function () {
+  //   var pinXLeft = mapPinMain.offsetLeft;
+  //   var pinYTop = mapPinMain.offsetTop;
+
+  //   if (pinXLeft + halfPinWidth <= MAP_X_MIN) {
+  //     mapPinMain.style.left = MAP_X_MIN - halfPinWidth + 'px';
+  //   }
+  //   if (pinXLeft + halfPinWidth >= maxWidth) {
+  //     mapPinMain.style.left = maxWidth - halfPinWidth + 'px';
+  //   }
+  //   if (pinYTop + pinHeight <= MAP_Y_MIN) {
+  //     mapPinMain.style.top = MAP_Y_MIN - pinHeight + 'px';
+  //   }
+  //   if (pinYTop + pinHeight >= MAP_Y_MAX) {
+  //     mapPinMain.style.top = MAP_Y_MAX - pinHeight + 'px';
+  //   }
+  // };
+
+  // mapPinMain.addEventListener('mousedown', function (evt) {
+  //   evt.preventDefault();
+
+  //   var startCoords = {
+  //     x: evt.clientX,
+  //     y: evt.clientY
+  //   };
+
+  //   var onMouseMove = function (moveEvt) {
+  //     moveEvt.preventDefault();
+
+  //     var shift = {
+  //       x: startCoords.x - moveEvt.clientX,
+  //       y: startCoords.y - moveEvt.clientY
+  //     };
+
+  //     startCoords = {
+  //       x: moveEvt.clientX,
+  //       y: moveEvt.clientY
+  //     };
+
+  //     mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
+  //     mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
+  //     checkMoveLimits();
+  //     getMainPinAddress();
+  //   };
+
+  //   var onMouseUp = function (upEvt) {
+  //     upEvt.preventDefault();
+
+  //     document.removeEventListener('mousemove', onMouseMove);
+  //     document.removeEventListener('mouseup', onMouseUp);
+  //   };
+
+  //   document.addEventListener('mousemove', onMouseMove);
+  //   document.addEventListener('mouseup', onMouseUp);
+  // });
 
   // собирает всю информацию о пине
   var renderPin = function (pin) {
