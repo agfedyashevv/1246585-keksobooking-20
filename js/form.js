@@ -105,6 +105,7 @@
     window.pin.drawPins();
     window.pin.getMainPinAddress();
     setHousingPrice();
+    window.avatar.removePreviewPhotos();
   };
 
   typeOfHousing.addEventListener('change', setHousingPrice);
