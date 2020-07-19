@@ -74,6 +74,6 @@
   };
 
   window.filter = {
-    setFilters: setFilters
+    set: setFilters
   };
 })();

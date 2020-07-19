@@ -10,7 +10,7 @@
 
   var announcementElement = similarCardTemplate.cloneNode(true);
 
-  var cardCloseButton = announcementElement.querySelector('.popup__close');
+  var popupClose = announcementElement.querySelector('.popup__close');
   var priceValue = announcementElement.querySelector('.popup__text--price');
   var timeValue = announcementElement.querySelector('.popup__text--time');
   var capacityValue = announcementElement.querySelector('.popup__text--capacity');
@@ -52,33 +52,33 @@
   // Функция отрисовки преимуществ
   var renderFeatures = function (container, features) {
     container.innerHTML = '';
-    for (var i = 0; i < features.length; i++) {
+    features.forEach(function (element) {
       var feature = document.createElement('li');
-      feature.classList.add('popup__feature', 'popup__feature--' + features[i]);
+      feature.classList.add('popup__feature', 'popup__feature--' + element);
       container.appendChild(feature);
-    }
+    });
   };
 
   // отрисовываем фото
   var renderPhotos = function (container, photos) {
     container.innerHTML = '';
-    for (var i = 0; i < photos.length; i++) {
+    photos.forEach(function (element) {
       var photo = document.createElement('img');
-      photo.src = photos[i];
+      photo.src = element;
       photo.width = IMG_WIDTH;
       photo.height = IMG_HEIGHT;
       photo.classList.add('popup__photo');
       container.appendChild(photo);
-    }
+    });
   };
 
-  var onLeftMouseCloseCard = function (evt) {
+  var onLeftMouseClose = function (evt) {
     if (evt.button === 0) {
       closeAnnouncements();
     }
   };
 
-  var onEscCloseCard = function (evt) {
+  var onEscClose = function (evt) {
     if (evt.key === 'Escape') {
       evt.preventDefault();
       closeAnnouncements();
@@ -98,14 +98,14 @@
       removeActivePin();
     }
 
-    document.removeEventListener('keydown', onEscCloseCard);
+    document.removeEventListener('keydown', onEscClose);
   };
 
   window.card = {
     closeAnnouncements: closeAnnouncements,
-    cardCloseButton: cardCloseButton,
-    onLeftMouseCloseCard: onLeftMouseCloseCard,
-    onEscCloseCard: onEscCloseCard,
+    popupClose: popupClose,
+    onLeftMouseClose: onLeftMouseClose,
+    onEscClose: onEscClose,
     renderAnnouncement: renderAnnouncement
   };
 
