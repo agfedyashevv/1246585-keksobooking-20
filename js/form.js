@@ -74,6 +74,7 @@
     });
     document.addEventListener('keydown', closeEscSuccess);
     window.pin.mainSection.insertAdjacentElement('afterbegin', successElement);
+    window.mapControl.setUnactiveMode();
   };
 
   var closeEscSuccess = function (evt) {
@@ -95,7 +96,6 @@
     evt.preventDefault();
 
     window.backend.uploadData(new FormData(adField), showSuccessMessage, window.pin.onError);
-    window.mapControl.setUnactiveMode();
   };
 
   var resetForm = function (evt) {
