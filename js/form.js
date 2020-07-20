@@ -2,14 +2,17 @@
 
 (function () {
 
+  var CAPACITY_MIN = 0;
+  var ROOMS_MAX = 100;
+
   var adFormSubmit = document.querySelector('.ad-form__submit');
-  var mapAdForm = document.querySelector('.ad-form');
-  var priceInput = mapAdForm.querySelector('#price');
-  var typeOfHousing = mapAdForm.querySelector('#type');
-  var timeIn = mapAdForm.querySelector('#timein');
-  var timeOut = mapAdForm.querySelector('#timeout');
-  var rooms = mapAdForm.querySelector('#room_number');
-  var capacity = mapAdForm.querySelector('#capacity');
+  var adField = document.querySelector('.ad-form');
+  var priceInput = adField.querySelector('#price');
+  var typeOfHousing = adField.querySelector('#type');
+  var timeIn = adField.querySelector('#timein');
+  var timeOut = adField.querySelector('#timeout');
+  var rooms = adField.querySelector('#room_number');
+  var capacity = adField.querySelector('#capacity');
   var successTemplate = document.querySelector('#success')
     .content
     .querySelector('.success');
@@ -56,9 +59,9 @@
   var setRoomCapacity = function () {
     if (Number(rooms.value) < Number(capacity.value)) {
       capacity.setCustomValidity('Количество гостей не может превышать количество комнат');
-    } else if (Number(capacity.value) === 0 && Number(rooms.value) !== 100) {
+    } else if (Number(capacity.value) === CAPACITY_MIN && Number(rooms.value) !== ROOMS_MAX) {
       capacity.setCustomValidity('«Не для гостей» можно выбрать только 100 комнат');
-    } else if (Number(rooms.value) === 100 && Number(capacity.value) !== 0) {
+    } else if (Number(rooms.value) === ROOMS_MAX && Number(capacity.value) !== CAPACITY_MIN) {
       capacity.setCustomValidity('100 комнат — «не для гостей»');
     } else {
       capacity.setCustomValidity('');
@@ -71,6 +74,7 @@
     });
     document.addEventListener('keydown', closeEscSuccess);
     window.pin.mainSection.insertAdjacentElement('afterbegin', successElement);
+    window.mapControl.setUnactiveMode();
   };
 
   var closeEscSuccess = function (evt) {
@@ -83,28 +87,21 @@
 
   var closeSuccessMessage = function () {
     successElement.remove(successElement);
+    document.removeEventListener('click', function () {
+      closeSuccessMessage(successElement);
+    });
   };
 
   var onFormSubmit = function (evt) {
     evt.preventDefault();
 
-    window.backend.uploadData(new FormData(mapAdForm), showSuccessMessage, window.pin.onError);
-    mapAdForm.reset();
-    window.card.closeAnnouncements();
-    window.pin.mapFilters.reset();
-    window.mapControl.setUnactiveMode();
-    window.pin.deletePins();
-    setHousingPrice();
+    window.backend.uploadData(new FormData(adField), showSuccessMessage, window.pin.onError);
   };
 
   var resetForm = function (evt) {
     evt.preventDefault();
-    mapAdForm.reset();
-    window.card.closeAnnouncements();
-    window.pin.mapFilters.reset();
-    window.pin.drawPins();
-    window.pin.getMainPinAddress();
-    setHousingPrice();
+
+    window.mapControl.setUnactiveMode();
   };
 
   typeOfHousing.addEventListener('change', setHousingPrice);
@@ -113,12 +110,13 @@
   rooms.addEventListener('change', setRoomCapacity);
   capacity.addEventListener('change', setRoomCapacity);
   adFormSubmit.addEventListener('click', setRoomCapacity);
-  mapAdForm.addEventListener('submit', onFormSubmit);
+  adField.addEventListener('submit', onFormSubmit);
   adFormReset.addEventListener('click', resetForm);
 
   window.form = {
-    mapAdForm: mapAdForm,
-    offerTypes: offerTypes
+    adField: adField,
+    offerTypes: offerTypes,
+    setHousingPrice: setHousingPrice
   };
 
 })();

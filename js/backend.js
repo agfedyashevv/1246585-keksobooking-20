@@ -2,6 +2,8 @@
 
 (function () {
 
+  var TIMEOUT_IN_MS = 10000;
+
   var Url = {
     GET: 'https://javascript.pages.academy/keksobooking/data',
     POST: 'https://javascript.pages.academy/keksobooking'
@@ -10,7 +12,6 @@
   var StatusCode = {
     OK: 200
   };
-  var TIMEOUT_IN_MS = 10000;
 
   var createRequest = function (onSuccess, onError) {
     var xhr = new XMLHttpRequest();

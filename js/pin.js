@@ -28,9 +28,7 @@
   var errorTemplate = document.querySelector('#error')
     .content
     .querySelector('.error');
-
   var errorElement = errorTemplate.cloneNode(true);
-
   var mainSection = document.querySelector('main');
 
   // отслеживает нажатие левой кнопки мыши
@@ -123,8 +121,8 @@
       mapSection.insertBefore(window.card.renderAnnouncement(pin), mapFiltersContainer);
       pinElement.classList.add('map__pin--active');
 
-      window.card.cardCloseButton.addEventListener('click', window.card.onLeftMouseCloseCard);
-      document.addEventListener('keydown', window.card.onEscCloseCard);
+      window.card.popupClose.addEventListener('click', window.card.onLeftMouseClose);
+      document.addEventListener('keydown', window.card.onEscClose);
     });
 
     return pinElement;
@@ -134,16 +132,16 @@
   var showServerPins = function (announcements) {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < announcements.length; i++) {
-      fragment.appendChild(renderPin(announcements[i]));
-    }
+    announcements.forEach(function (element) {
+      fragment.appendChild(renderPin(element));
+    });
 
     return window.pin.similarListElement.appendChild(fragment);
   };
 
   var drawPins = window.debounce(function () {
     deletePins();
-    var newPins = window.filter.setFilters(pins);
+    var newPins = window.filter.set(pins);
     showServerPins(newPins);
   });
 
@@ -152,9 +150,9 @@
   };
 
   var deleteServerPins = function (elements) {
-    for (var i = 0; i < elements.length; i++) {
-      elements[i].remove();
-    }
+    elements.forEach(function (el) {
+      el.remove();
+    });
   };
 
   var deletePins = function () {
@@ -204,17 +202,16 @@
   mapFilters.addEventListener('change', window.card.closeAnnouncements);
 
   window.pin = {
-    getMainPinAddress: getMainPinAddress,
+    getAddress: getMainPinAddress,
     activeMode: activeMode,
-    stopMainPinEventListener: stopMainPinEventListener,
+    stopEventListener: stopMainPinEventListener,
     similarListElement: similarListElement,
     onError: onError,
-    requestPins: requestPins,
-    drawPins: drawPins,
+    request: requestPins,
+    draw: drawPins,
     onSuccess: onSuccess,
     mainSection: mainSection,
-    deletePins: deletePins,
-    pins: pins,
+    delete: deletePins,
     mapFilters: mapFilters
   };
 
