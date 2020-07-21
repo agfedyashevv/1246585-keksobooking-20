@@ -74,7 +74,7 @@
     });
     document.addEventListener('keydown', closeEscSuccess);
     window.pin.mainSection.insertAdjacentElement('afterbegin', successElement);
-    window.mapControl.setUnactiveMode();
+    window.mapControl.setUnActiveMode();
   };
 
   var closeEscSuccess = function (evt) {
@@ -101,7 +101,7 @@
   var resetForm = function (evt) {
     evt.preventDefault();
 
-    window.mapControl.setUnactiveMode();
+    window.mapControl.setUnActiveMode();
   };
 
   typeOfHousing.addEventListener('change', setHousingPrice);

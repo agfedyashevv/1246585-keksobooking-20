@@ -25,11 +25,14 @@
   };
 
   // убирает скрытие элементов страницы и переводит страницу в активное состояние
-  var deleteUnactiveMode = function () {
+  var deleteUnActiveMode = function () {
+    if (!window.pin.activeMode) {
+      window.pin.request();
+      window.pin.draw();
+    }
     mapElement.classList.remove('map--faded');
     window.form.adField.classList.remove('ad-form--disabled');
     window.pin.stopEventListener();
-    window.pin.draw();
     enabledElements(disabledPage);
     setCursorPointer(mapFilter);
     setCursorPointer(mapFeature);
@@ -38,14 +41,13 @@
   };
 
   // деактивировать страницу
-  var setUnactiveMode = function () {
+  var setUnActiveMode = function () {
     mapElement.classList.add('map--faded');
     window.form.adField.classList.add('ad-form--disabled');
     disableElements(disabledPage);
     setCursorDefault(mapFilter);
     setCursorDefault(mapFeature);
     window.pin.activeMode = false;
-    window.pin.request();
     window.form.adField.reset();
     window.card.closeAnnouncements();
     window.pin.mapFilters.reset();
@@ -54,6 +56,8 @@
     window.avatar.removePreviewPhotos();
     mapPinMain.style = 'left: 570px; top: 375px;';
     window.pin.getAddress();
+    mapPinMain.addEventListener('mousedown', window.pin.onLeftMouseDownProcess);
+    mapPinMain.addEventListener('keydown', window.pin.onEnterProcess);
   };
 
   // устанавливает курсор с типом по умолчанию
@@ -77,9 +81,9 @@
     addressInput: addressInput,
     disableElements: disableElements,
     setCursorDefault: setCursorDefault,
-    deleteUnactiveMode: deleteUnactiveMode,
+    deleteUnActiveMode: deleteUnActiveMode,
     disabledPage: disabledPage,
-    setUnactiveMode: setUnactiveMode
+    setUnActiveMode: setUnActiveMode
   };
 
 })();

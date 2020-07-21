@@ -35,20 +35,20 @@
   var onLeftMouseDownProcess = function (evt) {
     if (evt.button === 0) {
       evt.preventDefault();
-      window.mapControl.deleteUnactiveMode();
+      window.mapControl.deleteUnActiveMode();
     }
   };
 
   // отслеживает нажатие Enter
   var onEnterProcess = function (evt) {
     if (evt.key === 'Enter') {
-      window.mapControl.deleteUnactiveMode();
+      window.mapControl.deleteUnActiveMode();
     }
   };
 
   var onEscProcess = function (evt) {
     if (evt.key === 'Escape') {
-      window.mapControl.deleteUnactiveMode();
+      window.mapControl.deleteUnActiveMode();
     }
   };
 
@@ -63,37 +63,6 @@
 
     window.mapControl.addressInput.value = Math.floor(leftCoord) + ', ' + Math.floor(topCoord);
   };
-
-  mapPinMain.addEventListener('mousedown', function (evt) {
-    evt.preventDefault();
-
-    var mapCoord = mapOverlay.getBoundingClientRect();
-
-    var onMouseMove = function (moveEvt) {
-      moveEvt.preventDefault();
-
-      var coordX = moveEvt.clientX - mapCoord.left;
-      var coordY = moveEvt.clientY - mapCoord.top;
-
-      coordX = Math.max(MAP_X_MIN, Math.min(maxWidth, coordX)) - halfPinWidth;
-      coordY = Math.max(MAP_Y_MIN, Math.min(MAP_Y_MAX, coordY)) - pinHeight;
-
-      mapPinMain.style.left = coordX + 'px';
-      mapPinMain.style.top = coordY + 'px';
-
-      getMainPinAddress();
-    };
-
-    var onMouseUp = function (upEvt) {
-      upEvt.preventDefault();
-
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  });
 
   // убирает отслеживание нажатия левой кнопки мыши и Enter для главного пина
   var stopMainPinEventListener = function () {
@@ -146,7 +115,7 @@
   });
 
   var requestPins = function () {
-    window.backend.loadData(onSuccess, onError);
+    window.backend.loadData(onSuccess, onLoadError);
   };
 
   var deleteServerPins = function (elements) {
@@ -174,9 +143,31 @@
     mainSection.insertAdjacentElement('afterbegin', errorElement);
   };
 
+  var onLoadError = function (errorMessage) {
+    var messageText = errorElement.querySelector('p');
+    messageText.textContent = errorMessage;
+    errorElement.querySelector('.error__button').addEventListener('click', closeLoadErrorMessage);
+    document.addEventListener('keydown', closeEscLoadErrorMessage);
+    mainSection.insertAdjacentElement('afterbegin', errorElement);
+  };
+
+  var closeLoadErrorMessage = function () {
+    errorElement.remove();
+    window.mapControl.setUnActiveMode();
+    errorElement.querySelector('.error__button').removeEventListener('click', closeLoadErrorMessage);
+  };
+
+  var closeEscLoadErrorMessage = function (evt) {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      errorElement.remove();
+      window.mapControl.setUnActiveMode();
+      document.removeEventListener('keydown', closeEscLoadErrorMessage);
+    }
+  };
+
   var closeServerError = function (element) {
     element.remove();
-    requestPins();
   };
 
   var closeLeftMouseError = function (evt) {
@@ -193,6 +184,37 @@
       document.removeEventListener('keydown', closeEscError);
     }
   };
+
+  mapPinMain.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    var mapCoord = mapOverlay.getBoundingClientRect();
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var coordX = moveEvt.clientX - mapCoord.left;
+      var coordY = moveEvt.clientY - mapCoord.top;
+
+      coordX = Math.max(MAP_X_MIN, Math.min(maxWidth, coordX)) - halfPinWidth;
+      coordY = Math.max(MAP_Y_MIN, Math.min(MAP_Y_MAX, coordY)) - pinHeight;
+
+      mapPinMain.style.left = coordX + 'px';
+      mapPinMain.style.top = coordY + 'px';
+
+      getMainPinAddress();
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
 
   // добавляет отслеживание нажатия левой кнопки мыши и Enter для главного пина
   mapPinMain.addEventListener('mousedown', onLeftMouseDownProcess);
@@ -212,7 +234,9 @@
     onSuccess: onSuccess,
     mainSection: mainSection,
     delete: deletePins,
-    mapFilters: mapFilters
+    mapFilters: mapFilters,
+    onLeftMouseDownProcess: onLeftMouseDownProcess,
+    onEnterProcess: onEnterProcess
   };
 
 })();
